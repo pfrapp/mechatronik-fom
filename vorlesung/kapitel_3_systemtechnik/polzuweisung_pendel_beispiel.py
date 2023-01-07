@@ -133,3 +133,98 @@ K_acker = ctrl.acker(strecke.A, strecke.B, wunschpole)
 
 print(f'Reglerparameter via Ackermannformel: {K_acker}')
 
+# %% Test eines Sprungs ohne Vorfilter
+
+block_strecke = ctrl.ss2io(strecke, inputs='u', outputs=['x1', 'x2'])
+block_regler = ctrl.ss2io(K_sys, inputs=['x1', 'x2'], outputs='kx')
+summations_block = ctrl.summing_junction(inputs=['-kx', 'w'], output='u')
+geschlossener_kreis = ctrl.interconnect((block_strecke, block_regler, summations_block), inputs='w', outputs=['x1', 'x2'])
+
+print(geschlossener_kreis)
+
+# Anfangsbedingung: x1 = 0.0, x2 = 0.0
+x0 = np.array([0.0, 0.0])
+
+response = ctrl.step_response(geschlossener_kreis, T=t, X0=x0)
+
+x1 = response.states[0,:].squeeze()
+x2 = response.states[1,:].squeeze()
+
+# Nachprozessierung zur Berechnung der Stellgroesse.
+u = -np.dot(K_params, response.states.squeeze()) + response.inputs.squeeze()
+
+fig = plt.figure(3)
+plt.clf()
+ax = fig.add_subplot(2,1,1)
+
+ax.plot(t, x1, label='$x_1$')
+ax.plot(t, x2, label='$x_2$')
+
+ax.grid(True)
+ax.set(xlabel='$t$')
+ax.set(ylabel='$x$')
+ax.legend()
+
+ax = fig.add_subplot(2,1,2)
+
+ax.plot(t, u, label='$u$')
+
+ax.grid(True)
+ax.set(xlabel='$t$')
+ax.set(ylabel='$u$')
+ax.legend()
+
+plt.suptitle(f'Geschlossener Kreis, $\omega_0$ = {omega_0:4.2f}, Sprung auf $w=1$ ohne Vorfilter')
+
+plt.show()
+
+# %% Test eines Sprungs mit Vorfilter
+
+C = np.array([[1.0, 0.0]])
+V = -1.0 / np.linalg.multi_dot((C, np.linalg.inv(strecke.A - np.dot(strecke.B, K_params.reshape(1,2))), strecke.B))
+
+# Kein Zustand im Vorfilter, da das Vorfilter rein algebraisch ist.
+V_sys = ctrl.ss([], [], [], V, states=[])
+print(f'Anzahl Zustaende im Vorfilter: {V_sys.nstates}')
+
+block_strecke = ctrl.ss2io(strecke, inputs='u', outputs=['x1', 'x2'])
+block_regler = ctrl.ss2io(K_sys, inputs=['x1', 'x2'], outputs='kx')
+block_vorfilter = ctrl.ss2io(V_sys, inputs='w', outputs='Vw')
+summations_block = ctrl.summing_junction(inputs=['-kx', 'Vw'], output='u')
+geschlossener_kreis = ctrl.interconnect((block_strecke, block_regler, block_vorfilter, summations_block), inputs='w', outputs=['x1', 'x2'])
+
+print(geschlossener_kreis)
+
+response = ctrl.step_response(geschlossener_kreis, T=t, X0=x0)
+
+x1 = response.states[0,:].squeeze()
+x2 = response.states[1,:].squeeze()
+
+# Nachprozessierung zur Berechnung der Stellgroesse.
+u = -np.dot(K_params, response.states.squeeze()) + response.inputs.squeeze()
+
+fig = plt.figure(4)
+plt.clf()
+ax = fig.add_subplot(2,1,1)
+
+ax.plot(t, x1, label='$x_1$')
+ax.plot(t, x2, label='$x_2$')
+
+ax.grid(True)
+ax.set(xlabel='$t$')
+ax.set(ylabel='$x$')
+ax.legend()
+
+ax = fig.add_subplot(2,1,2)
+
+ax.plot(t, u, label='$u$')
+
+ax.grid(True)
+ax.set(xlabel='$t$')
+ax.set(ylabel='$u$')
+ax.legend()
+
+plt.suptitle(f'Geschlossener Kreis, $\omega_0$ = {omega_0:4.2f}, Sprung auf $w=1$ mit Vorfilter')
+
+plt.show()
+
