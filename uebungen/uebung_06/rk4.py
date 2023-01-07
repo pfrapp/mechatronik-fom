@@ -73,6 +73,7 @@ t_sim = 8.0
 # Zeitpunkt
 t = np.arange(0.0, t_sim, delta_t)
 
+# Analytische Loesung der linearisierten Dgl (approximative Loesung)
 x_analytisch = np.pi/6*np.cos(t)
 
 x_numerisch = np.zeros((2,t.size)) # 2 Zeilen
@@ -90,7 +91,7 @@ for idx, tau in enumerate(t[1:]):
 
 fig = plt.figure(2)
 plt.clf()
-plt.plot(t, x_analytisch, label='Analytische Loesung', linewidth=2.0)
+plt.plot(t, x_analytisch, label='Analytische approximative Loesung', linewidth=2.0)
 plt.plot(t, x_numerisch[0,:], '--', label='Numerische Loesung RK4')
 plt.plot(t, x_numerisch_euler[0,:], '--', label='Numerische Loesung Euler vorwaerts')
 plt.xlim(0,t_sim)
