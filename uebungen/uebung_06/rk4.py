@@ -19,7 +19,7 @@ def rk4(f, x_k, delta_t):
     ----------
     f : Function
         Rechte Seite der Differentialgleichung.
-    x_k : Scalar
+    x_k : Vektor
         Aktueller Funktionswert x_k.
     delta_t : Scalar
         Integrationsschrittweite.
@@ -45,7 +45,7 @@ def euler_vorwaerts(f, x_k, delta_t):
     ----------
     f : Function
         Rechte Seite der Differentialgleichung.
-    x_k : Scalar
+    x_k : Vektor
         Aktueller Funktionswert x_k.
     delta_t : Scalar
         Integrationsschrittweite.
