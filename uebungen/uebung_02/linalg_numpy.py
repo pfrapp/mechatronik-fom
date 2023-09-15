@@ -119,6 +119,14 @@ if abs(np.linalg.det(D)) > 1.0e-6:
     print(np.linalg.inv(D))
 
 
+# %% Spontan entstandene Zusatzaufgabe
+
+H = np.array([[2.0, 3.0, 1.0],
+              [5.0, 0.0, -1.0],
+              [-3.0, 4.0, 1]])
+
+det_H = np.linalg.det(H)
+print(f'Determinante von H = {det_H}')
 
 # %% Aufg. 5 -- Eigenwerte und -vektoren
 # Hinweis: Die Reihenfolge der EW und EV stimmt nicht notwendigerweise
