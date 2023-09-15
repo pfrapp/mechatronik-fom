@@ -6,11 +6,35 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
+from mpl_toolkits.mplot3d import axes3d
 
 # %% Farben
 
 accent1 = [0.0, 0.6, 0.5411764705882353]
 accent5 = [0.0, 0.6549019607843137, 0.8941176470588236]
+
+# %% 2D Funktion (Contour)
+
+x = np.linspace(0,10,100)
+y = np.linspace(-5,5,100)
+
+X, Y = np.meshgrid(x,y)
+Z = 3*X + 5*Y**2
+plt.figure(1)
+plt.contourf(X, Y, Z)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.show()
+     
+
+# %% 2D Funktion (Surface)
+
+ax = plt.figure(2).add_subplot(projection='3d')
+ax.plot_surface(X, Y, Z)
+ax.set(xlabel='x')
+ax.set(ylabel='y')
+plt.show()
+
 
 # %% Optimierung
 
